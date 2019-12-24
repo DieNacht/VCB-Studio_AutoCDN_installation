@@ -151,7 +151,7 @@ function art(){
   echo -ne "${bold}${yellow}请输入你希望用于分流的做种大小(GB)${normal}: " ; read -e CDNSize
   while [ -z "$(echo $CDNSize| sed -n "/^[0-9]\+$/p")" ]; do
     echo -ne "${bold}${yellow}你好？这里要输入数字的。${normal}"
-    echo -e "${bold}${yellow}请输入你希望用于分流的做种大小(GB)${normal}: " ; read -e CDNSize
+    echo -ne "${bold}${yellow}请输入你希望用于分流的做种大小(GB)${normal}: " ; read -e CDNSize
   done
   #安装autoremove-torrents
   pip install autoremove-torrents
