@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-OPTS=$(getopt -n "$0" -o u:p:w:i:h:l: --long "username:,password:,home:,wport:,iport:,lang:,logbase:" -- "$@")
-eval set -- "$OPTS"
 function _colors() {
     red=$(tput setaf 1)          ; green=$(tput setaf 2)        ; yellow=$(tput setaf 3)  ; bold=$(tput bold)
     magenta=$(tput setaf 5)      ; cyan=$(tput setaf 6)         ; white=$(tput setaf 7)   ; normal=$(tput sgr0)
