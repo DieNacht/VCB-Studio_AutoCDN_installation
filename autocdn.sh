@@ -1,10 +1,11 @@
 #!/bin/bash
 #
+
 function _colors() {
     red=$(tput setaf 1)          ; green=$(tput setaf 2)        ; yellow=$(tput setaf 3)  ; bold=$(tput bold)
     magenta=$(tput setaf 5)      ; cyan=$(tput setaf 6)         ; white=$(tput setaf 7)   ; normal=$(tput sgr0)
     on_red=$(tput setab 1)       ; on_magenta=$(tput setab 5)   ; on_cyan=$(tput setab 6) ; shanshuo=$(tput blink)
-    baiqingse=${white}${on_cyan} ; baihongse=${white}${on_red}  ; baizise=${white}${on_magenta}
+    baiqingse=${white}${on_cyan} ; baihongse=${white}${on_red}  ; baizise=${white}${on_magenta} ;
 }
 _colors
 
