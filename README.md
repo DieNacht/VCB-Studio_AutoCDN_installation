@@ -1,4 +1,4 @@
-# vcbs-autocdn
+# VCB-Studio_AutoCDN_installation
 ```
 apt update; apt -y upgrade; apt -y install dos2unix;\ 
 wget -P /root https://github.com/DieNacht/vcbs-autocdn/raw/master/autocdn.sh;\
