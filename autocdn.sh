@@ -17,6 +17,7 @@ function inexistence_qb_fg() {
 function configuration_qb_fg() {
   echo -ne "${bold}${yellow}请输入你的r21 passkey${normal}: " ; read -e Passkey
   #配置qb
+  chmod 777 -R /home/r21cdn/.config
   cat > /home/r21cdn/.config/qBittorrent/qBittorrent.conf << 'EOF'
 [Application]
 FileLogger\Age=6
@@ -43,6 +44,8 @@ Session\MultiConnectionsPerIp=true
 Session\SendBufferLowWatermark=1024
 Session\SendBufferWatermark=3072
 Session\SendBufferWatermarkFactor=250
+Session\SuggestMode=true
+Session\GuidedReadCache=true
 
 [Core]
 AutoDeleteAddedTorrentFile=Never
@@ -51,6 +54,7 @@ AutoDeleteAddedTorrentFile=Never
 Accepted=true
 
 [Preferences]
+Advanced\osCache=false
 Bittorrent\AddTrackers=false
 Bittorrent\DHT=true
 Bittorrent\Encryption=0
@@ -66,7 +70,7 @@ Connection\GlobalDLLimitAlt=0
 Connection\GlobalUPLimitAlt=0
 Connection\PortRangeMin=13719
 Downloads\DiskWriteCacheSize=1024
-Downloads\DiskWriteCacheTTL=5
+Downloads\DiskWriteCacheTTL=30
 Downloads\PreAllocation=false
 Downloads\SavePath=/home/r21cdn/data/
 Downloads\ScanDirsV2=@Variant(\0\0\0\x1c\0\0\0\0)
@@ -110,7 +114,7 @@ WebUI\Username=r21cdn
 EOF
   service qbittorrent@r21cdn restart
   #配置flexget
-  cat > /root/.config/flexget/config.yml << 'EOF'
+  cat > /home/r21cdn/.config/flexget/config.yml << 'EOF'
 tasks:
   r21:
     limit:
@@ -138,13 +142,16 @@ tasks:
 web_server:
   port: 6566
   web_ui: yes
-schedules:
-  - tasks: [r21]
-    schedule:
-      minute: " */3 "
+schedules: no
 EOF
-  sed -i "s/Passkey/$Passkey/g" /root/.config/flexget/config.yml
-  service flexget restart ;
+  sed -i "s/Passkey/$Passkey/g" /home/r21cdn/.config/flexget/config.yml
+  service flexget restart
+  su r21cdn -c "crontab -l > /home/r21cdn/now.cron"
+  cat >> /home/r21cdn/now.cron << EOF
+*/3 * * * * /usr/local/bin/flexget --cron execute --no-cache
+EOF
+  su r21cdn -c "crontab /home/r21cdn/now.cron"
+  rm -rf /home/r21cdn/now.cron;
 }
 
 function art(){
@@ -154,13 +161,14 @@ function art(){
     echo -ne "${bold}${yellow}请输入你希望用于分流的做种大小(GB)${normal}: " ; read -e CDNSize
   done
   #安装autoremove-torrents
-  pip install autoremove-torrents
+  pip3 install autoremove-torrents
   #配置autoremove-torrents
-  mkdir -p ~/.config/autoremove-torrents
-  mkdir -p ~/.config/autoremove-torrents/logs
-  touch ~/.config/autoremove-torrents/config.yml
+  chmod 777 -R /home/r21cdn/.config
+  mkdir -p /home/r21cdn/.config/autoremove-torrents
+  mkdir -p /home/r21cdn/.config/autoremove-torrents/logs
+  touch /home/r21cdn/.config/autoremove-torrents/config.yml
   if [[ $CDNSize != 0 ]]; then
-    cat > /root/.config/autoremove-torrents/config.yml << 'EOF'
+    cat > /home/r21cdn/.config/autoremove-torrents/config.yml << 'EOF'
 AutoCDN:
   client: qbittorrent
   host: http://127.0.0.1:2017
@@ -175,13 +183,13 @@ AutoCDN:
         action: remove-old-seeds
   delete_data: true
 EOF
-  sed -i "s/CDNSize/$CDNSize/g" /root/.config/autoremove-torrents/config.yml
-    crontab -l > /root/now.cron
-    cat >> /root/now.cron << EOF
-*/1 * * * * /usr/local/bin/autoremove-torrents --conf="/root/.config/autoremove-torrents/config.yml" --log="/root/.config/autoremove-torrents/logs"
+  sed -i "s/CDNSize/$CDNSize/g" /home/r21cdn/.config/autoremove-torrents/config.yml
+    su r21cdn -c "crontab -l > /home/r21cdn/now.cron"
+    cat >> /home/r21cdn/now.cron << EOF
+*/1 * * * * /usr/local/bin/autoremove-torrents --conf="/home/r21cdn/.config/autoremove-torrents/config.yml" --log="/home/r21cdn/.config/autoremove-torrents/logs"
 EOF
-    crontab /root/now.cron
-    rm -rf /root/now.crom
+    su r21cdn -c "crontab /home/r21cdn/now.cron"
+    rm -rf /home/r21cdn/now.cron
   fi
   echo ;
 }
